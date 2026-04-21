@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universe | Private Hub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=Inter:wght@300;400&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --accent: #ff2d55; 
+            --glass: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-dim: rgba(255, 255, 255, 0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        body { 
+            background: #000; color: #fff; font-family: 'Inter', sans-serif; 
+            overflow-x: hidden;
+        }
+
+        .bg-wrapper {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(60, 0, 150, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(150, 0, 50, 0.15) 0%, transparent 50%),
+                #000;
+        }
+        .nebula {
+            position: absolute; inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.3; animation: drift 60s linear infinite;
+        }
+        @keyframes drift { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+
+        #cursor {
+            position: fixed; width: 8px; height: 8px; background: #fff; border-radius: 50%;
+            pointer-events: none; z-index: 9999; mix-blend-mode: difference;
+            box-shadow: 0 0 20px #fff; transition: transform 0.1s;
+        }
+
+        nav {
+            position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 30px; z-index: 1000; padding: 15px 40px;
+            background: rgba(0,0,0,0.5); border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px); border-radius: 100px;
+        }
+        .nav-link { font-family: 'Outfit'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); text-decoration: none; transition: 0.4s; }
+        .nav-link:hover { color: #fff; }
+
+        .hero { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .hero-title { 
+            font-family: 'Outfit'; font-size: clamp(3rem, 12vw, 8rem); font-weight: 900; 
+            letter-spacing: 0.15em; line-height: 0.9;
+            background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,0.1));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { font-family: 'JetBrains Mono'; font-size: 11px; color: var(--accent); letter-spacing: 8px; margin-top: 20px; text-transform: uppercase; }
+
+        .app-section { padding: 100px 20px; display: flex; flex-direction: column; align-items: center; }
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 25px; width: 100%; max-width: 900px;
+        }
+        .app-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            aspect-ratio: 1; border-radius: 35px; display: flex; align-items: center; justify-content: center;
+            font-size: 40px; transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .app-card:hover { transform: translateY(-15px) scale(1.05); border-color: #fff; background: rgba(255,255,255,0.05); }
+
+        #svc-overlay {
+            position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.95);
+            display: none; align-items: center; justify-content: center; backdrop-filter: blur(40px);
+        }
+        .svc-content { width: 350px; text-align: center; padding: 40px; border-radius: 40px; border: 1px solid var(--glass-border); }
+        .price-list { margin-top: 30px; font-family: 'JetBrains Mono'; text-align: left; }
+        .price-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+
+        .pluggers { padding: 100px 20px; text-align: center; }
+        .plug-row { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 60px; }
+        
+        .id-card {
+            width: 300px; background: var(--glass); border: 1px solid var(--glass-border);
+            padding: 45px 30px; border-radius: 50px; transition: 0.4s;
+            animation: floatCard 4s ease-in-out infinite;
+        }
+        .id-card:nth-child(2) { animation-delay: 1s; }
+        .id-card:nth-child(3) { animation-delay: 2s; }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .id-card:hover { border-color: var(--accent); box-shadow: 0 0 50px rgba(255, 45, 85, 0.1); animation-play-state: paused; }
+        
+        .pfp-wrap { width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 25px; border: 2px solid var(--accent); padding: 5px; }
+        .pfp-wrap img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        
+        .hire-btn { 
+            width: 100%; background: #fff; color: #000; padding: 15px; border-radius: 20px; 
+            font-family: 'Outfit'; font-weight: 900; letter-spacing: 2px; margin-top: 25px; transition: 0.3s;
+        }
+        .past-btn { font-size: 9px; color: var(--text-dim); margin-top: 15px; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; }
+
+        .products { padding: 100px 20px; max-width: 700px; margin: 0 auto; }
+        .expand-box { background: var(--glass); border: 1px solid var(--glass-border); padding: 25px; border-radius: 25px; margin-bottom: 20px; }
+
+        footer { padding: 50px; text-align: center; font-size: 10px; color: var(--text-dim); letter-spacing: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="cursor"></div>
+    <div class="bg-wrapper"><div class="nebula"></div></div>
+
+    <nav>
+        <a href="#home" class="nav-link" onmouseover="playHover()">Hub</a>
+        <a href="#apps" class="nav-link" onmouseover="playHover()">Services</a>
+        <a href="#pluggers" class="nav-link" onmouseover="playHover()">Pluggers</a>
+    </nav>
+
+    <section class="hero" id="home">
+        <div onclick="window.open('https://t.me/falennteam'); playClick();">
+            <h1 class="hero-title">UNIVERSE</h1>
+            <p class="hero-sub">Premium Operations</p>
+        </div>
+    </section>
+
+    <section class="app-section" id="apps">
+        <div class="grid-container">
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('YouTube', '₹5k - ₹18k', '₹8k', '₹23k')"><i class="fab fa-youtube"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('Instagram', '₹8k - ₹13k', '₹300 - ₹20k', '₹800')"><i class="fab fa-instagram"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('Facebook', '₹1,500', '₹1,000', '₹300')"><i class="fab fa-facebook"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('Snapchat', '₹500', '₹2k', '₹3k')"><i class="fab fa-snapchat"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('WhatsApp', '₹1,200', '₹800', 'N/A')"><i class="fab fa-whatsapp"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('X', '₹2,500', '₹1,200', '₹1,500')"><i class="fab fa-x-twitter"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('OnlyFans', '₹15,000', '₹10,000', '₹5,000')"><i class="fas fa-star"></i></div>
+            <div class="app-card" onmouseover="playHover()" onclick="openSvc('Telegram', '₹3,000', '₹1,300', 'Not Available')"><i class="fab fa-telegram"></i></div>
+        </div>
+    </section>
+
+    <section class="pluggers" id="pluggers">
+        <h2 style="font-family:'Outfit'; letter-spacing:10px;">PLUGGERS</h2>
+        <div class="plug-row">
+            <div class="id-card" data-tilt onmouseover="playHover()">
+                <div class="pfp-wrap"><img src="https://i.pinimg.com/474x/07/30/19/0730193357050e6dd0e369c876b9f60e.jpg"></div>
+                <h3>ALEX</h3>
+                <p style="font-size:11px; color:var(--accent); margin-top:5px;">Dev & Lead Plugger</p>
+                <p style="font-size:12px; color:var(--text-dim); margin-top:15px;">Specialist in removals and premium account recovery.</p>
+                <div class="hire-btn" onclick="window.open('https://t.me/warops'); playClick();">HIRE</div>
+                <div class="past-btn" onclick="window.open('https://t.me/AlexVaults'); playClick();">View Past Work</div>
+            </div>
+            <div class="id-card" data-tilt onmouseover="playHover()">
+                <div class="pfp-wrap"><img src="https://i.pinimg.com/236x/56/78/cb/5678cbf6d4c4c9cef3ee97605fce082d.jpg"></div>
+                <h3>REX</h3>
+                <p style="font-size:11px; color:var(--accent); margin-top:5px;">Verification Specialist</p>
+                <p style="font-size:12px; color:var(--text-dim); margin-top:15px;">Expert in app verifications and middle-man services.</p>
+                <div class="hire-btn" onclick="window.open('https://t.me/rexls'); playClick();">HIRE</div>
+                <div class="past-btn" onclick="alert('Ask in DMs - No past work channel available.'); playClick();">Ask in DMs</div>
+            </div>
+            <div class="id-card" data-tilt onmouseover="playHover()">
+                <div class="pfp-wrap"><img src="https://i.pinimg.com/736x/d4/a5/ee/d4a5eefd0482ec978b5c048a1e61d329.jpg"></div>
+                <h3>FALLEN</h3>
+                <p style="font-size:11px; color:var(--accent); margin-top:5px;">Professional Dev</p>
+                <p style="font-size:12px; color:var(--text-dim); margin-top:15px;">Expert in Web, App & DevOps Architecture.</p>
+                <div class="hire-btn" onclick="window.open('https://t.me/fallenfaiths'); playClick();">HIRE</div>
+                <div class="past-btn" onclick="alert('Ask in DMs - No past work channel available.'); playClick();">Ask in DMs</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="products">
+        <div class="expand-box" onclick="toggleInfo(); playClick();">
+            <p style="font-family:'Outfit'; letter-spacing:3px;">WHAT IS UNIVERSE SERVICE'S? <i class="fa fa-chevron-down" style="float:right"></i></p>
+            <div id="info-text" style="display:none; margin-top:20px; font-size:13px; color:var(--text-dim); line-height:1.6;">
+                Universe Services is a premium website providing professional-level removals, account verification, and recovery services. Since 2026, we have been leaders in digital assets and online security.
+            </div>
+        </div>
+    </section>
+
+    <footer>UNIVERSE BY ALEX | EST 2026</footer>
+
+    <div id="svc-overlay" onclick="this.style.display='none'; playClick();">
+        <div class="svc-content glass">
+            <h2 id="svc-title" style="font-family:'Outfit'; letter-spacing:5px;"></h2>
+            <div class="price-list">
+                <div class="price-item"><span>Removals</span> <span id="p-rem"></span></div>
+                <div class="price-item"><span>Recoveries</span> <span id="p-rec"></span></div>
+                <div class="price-item"><span>Verification</span> <span id="p-ver"></span></div>
+                <div class="price-item" id="p-cpr-row"><span>Copyright</span> <span>Active</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hoverSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+        const clickSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        hoverSfx.volume = 0.2;
+        clickSfx.volume = 0.5;
+
+        function playHover() { hoverSfx.currentTime = 0; hoverSfx.play(); }
+        function playClick() { clickSfx.currentTime = 0; clickSfx.play(); }
+
+        const cur = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            gsap.to(cur, { x: e.clientX, y: e.clientY, duration: 0.1 });
+        });
+
+        document.querySelectorAll('[data-tilt]').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                let rect = card.getBoundingClientRect();
+                let x = (e.clientX - rect.left) / rect.width - 0.5;
+                let y = (e.clientY - rect.top) / rect.height - 0.5;
+                gsap.to(card, { rotationY: x * 20, rotationX: -y * 20, duration: 0.5 });
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotationY: 0, rotationX: 0, duration: 1 });
+            });
+        });
+
+        function openSvc(name, rem, rec, ver) {
+            playClick();
+            document.getElementById('svc-title').innerText = name;
+            document.getElementById('p-rem').innerText = rem;
+            document.getElementById('p-rec').innerText = rec;
+            document.getElementById('p-ver').innerText = ver;
+            
+            // Logic to hide copyright row for Telegram
+            const cprRow = document.getElementById('p-cpr-row');
+            if(name === 'Telegram') {
+                cprRow.style.display = 'none';
+            } else {
+                cprRow.style.display = 'flex';
+            }
+
+            document.getElementById('svc-overlay').style.display = 'flex';
+            gsap.from(".svc-content", { scale: 0.8, opacity: 0, duration: 0.4 });
+        }
+
+        function toggleInfo() {
+            const t = document.getElementById('info-text');
+            t.style.display = t.style.display === 'none' ? 'block' : 'none';
+        }
+
+        gsap.from(".hero-title", { opacity: 0, y: 50, duration: 1.5, ease: "expo.out" });
+    </script>
+</body>
+</html>
